@@ -1,4 +1,3 @@
-
 import java.awt.AWTEvent;
 import java.awt.AlphaComposite;
 import java.awt.Color;
