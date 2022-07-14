@@ -12,6 +12,7 @@ import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
 import javax.swing.JFrame;
 import javax.swing.WindowConstants;
+import javax.swing.SwingUtilities;
 
 public class G extends JFrame
 {    		
@@ -30,39 +31,46 @@ public class G extends JFrame
 	// type, originx, originy, velocityx, velocityy, health, lastfire, hit, lastwave			
 	//int FREE = 0, BOAT, AVATAR_BULLET, ENEMY_BULLET, EXPLOSION_PARTICLE, WAVE
 	
-  protected void processEvent(AWTEvent e) 
+	protected void processEvent(AWTEvent e) 
 	{				
-		 super.processEvent(e);
-		 int eid = e.getID();
+		super.processEvent(e);
+		int eid = e.getID();
 		 
-		 if (eid == MouseEvent.MOUSE_RELEASED) 
-			 p[3] = 0; 
-		 if (eid == MouseEvent.MOUSE_PRESSED)
-			 p[3] = 1; 			 
+		if (eid == MouseEvent.MOUSE_RELEASED) 
+			p[3] = 0; 
+		if (eid == MouseEvent.MOUSE_PRESSED)
+			p[3] = 1; 			 
 		 
-		 if (eid == MouseEvent.MOUSE_MOVED || eid == MouseEvent.MOUSE_DRAGGED) 
-		 {
-       p[1] = ((MouseEvent)e).getX();
-       p[2] = ((MouseEvent)e).getY();			 
-		 }
+		if (eid == MouseEvent.MOUSE_MOVED || eid == MouseEvent.MOUSE_DRAGGED) 
+		{
+       		p[1] = ((MouseEvent)e).getX();
+       		p[2] = ((MouseEvent)e).getY();			 
+		}
 		 
-		 if (eid == KeyEvent.KEY_PRESSED || eid == KeyEvent.KEY_RELEASED) 
-			 keys[((KeyEvent)e).getKeyCode()] =eid == KeyEvent.KEY_PRESSED;
+		if (eid == KeyEvent.KEY_PRESSED || eid == KeyEvent.KEY_RELEASED) 
+			keys[((KeyEvent)e).getKeyCode()] =eid == KeyEvent.KEY_PRESSED;
 	}	
 	
 	public static void main(String[] args)
 	{
-		System.setProperty("sun.java2d.opengl", "true");    
-		new G();		
+		System.setProperty("sun.java2d.opengl", "true");   
+
+		SwingUtilities.invokeLater(new Runnable() {
+			public void run() {
+				new G();
+			}
+		});
+		//new G();
+		
 	}
 
 	public G()
 	{				
-		p[4] = 1024;
-		p[5] = 768;		
+		p[4] = 1920;
+		p[5] = 1080;		
 		double scroll1 = 0, scroll2 = 30;		
-	  //int fpsCount = 0, fps = 0;
-	  //double fpsTimer = 0;			
+		int fpsCount = 0, fps = 0;
+		double fpsTimer = 0;			
 		double rot = 0;
 		
 		// create background images - saves 40 bytes duplicating code
@@ -116,9 +124,9 @@ public class G extends JFrame
 		setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);		
 		enableEvents(AWTEvent.KEY_EVENT_MASK | AWTEvent.MOUSE_EVENT_MASK | AWTEvent.MOUSE_MOTION_EVENT_MASK);
 
-    setTitle("Gunroar4k");		
+		setTitle("Gunroar4k");		
 		setResizable(false);    
-    setIgnoreRepaint(true);        				
+    	setIgnoreRepaint(true);        				
                
 		//gameWindow.setCursor("Resources/Cursors/cursor1.png");
     		
@@ -185,6 +193,10 @@ public class G extends JFrame
 
     do 
     {			
+		if (keys[KeyEvent.VK_ESCAPE]) {
+			isGameRunning = false;
+		}
+
 			Graphics2D g = (Graphics2D) bufferStrategy.getDrawGraphics();
 			g.clearRect(0, 0, (int)p[4], (int)p[5]);
 			
@@ -297,8 +309,11 @@ public class G extends JFrame
 					p[14] += 4000 * frameTime;				
 				if (keys[KeyEvent.VK_A])		
 					p[13] -= 4000 * frameTime;				
-				if (keys[KeyEvent.VK_D])	
+				if (keys[KeyEvent.VK_D])
 					p[13] += 4000 * frameTime;	
+				if (keys[KeyEvent.VK_ESCAPE])
+					isGameRunning = false;
+
 
 				double len = p[13]*p[13] + p[14]*p[14];	  
 
@@ -464,7 +479,7 @@ public class G extends JFrame
 						// respawn
 						
 						p[i+5] = 100;						
-					  p[i+1] = (int)(Math.random()*724) + 150; 
+					  	p[i+1] = (int)(Math.random()*p[4]) + 0; 
 						p[i+2] = -50 - (Math.random()*300);
 						p[i+3] = (int)45 - (Math.random()*90);
 						p[i+4] =(int)(Math.random()*100) + 45; 
@@ -490,8 +505,8 @@ public class G extends JFrame
 																	
 				if (p[11] < 120)
 					p[11] = 120;
-				if (p[11] > 900)
-					p[11] = 900;
+				if (p[11] > (p[4] - 120))
+					p[11] = (p[4] - 120);
 				if (p[12] < 50)
 					p[12] = 50;
 				if (p[12] > p[5])
@@ -728,7 +743,7 @@ public class G extends JFrame
 			g.fillRect((int)p[4]-100, 0, (int)p[4], (int)p[5]+100);
 			
 			// draw fps
-/*
+
 			fpsCount++;				
 
 			if (p[0] > fpsTimer)
@@ -736,10 +751,10 @@ public class G extends JFrame
 				fpsTimer = p[0] + 1.0f;			
 				fps = fpsCount;
 				fpsCount = 0;
-			}*/
+			}
 
 			g.setPaint(Color.white);
-			//g.drawString("FPS:" + fps, 20, 80);
+			g.drawString("FPS:" + fps, 20, 80);
 			g.drawString("Health:" + p[15] + "%", 20, 120);
 		
 			g.dispose();
