@@ -15,7 +15,24 @@ import javax.swing.JFrame;
 import javax.swing.WindowConstants;
 import javax.swing.SwingUtilities;
 
-public class G extends JFrame
+public class Main
+{
+  public static void main(String[] args)
+  {
+    System.setProperty("sun.java2d.opengl", "true");
+
+//    SwingUtilities.invokeLater(new Runnable()
+//    {
+//      public void run()
+//      {
+//        new GameWindow();
+//      }
+//    });
+    new GameWindow();
+  }
+}
+
+public class GameWindow extends JFrame
 {
 
   public static boolean keys[] = new boolean[256];
@@ -57,22 +74,7 @@ public class G extends JFrame
     }
   }
 
-  public static void main(String[] args)
-  {
-    System.setProperty("sun.java2d.opengl", "true");
-
-//    SwingUtilities.invokeLater(new Runnable()
-//    {
-//      public void run()
-//      {
-//        new G();
-//      }
-//    });
-    new G();
-
-  }
-
-  public G()
+  public GameWindow()
   {
     p[4] = 1920;
     p[5] = 1080;
